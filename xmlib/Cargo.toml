@@ -1,0 +1,25 @@
+[package]
+name = "xmlib"
+version = "0.1.0"
+categories = ["encoding", "parser-implementations"]
+description = "Convert rust datastructures from and into xml"
+edition = "2021"
+homepage = "https://github.com/Akida31/xmlib"
+keywords = ["xml", "serialization"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/Akida31/xmlib"
+rust-version = "1.57.0"
+
+[dependencies]
+atoi = "2.0.0"
+fast-float = "0.2.0"
+itoa = "1.0.4"
+memchr = "2.5.0"
+quick-xml = { version = "0.23.0", features = ["encoding"] }
+ryu = "1.0.11"
+thiserror = "1.0.37"
+zip = { version = "0.6.3", default-features = false, features = ["deflate"] }
+
+[dev-dependencies]
+xmlib_derive = { path = "../xmlib_derive" }
