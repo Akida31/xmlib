@@ -1,13 +1,26 @@
 use std::fmt::{self, Debug, Display, Formatter};
 
 /// This type represents all possible errors that can occur.
-#[derive(Debug)]
 pub struct Error {
     /// Name of the element in which the error occurred.
     pub ty_name: String,
     /// Errorkind which contains additional data.
     pub kind: ErrorKind,
 }
+
+impl Debug for Error {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        Display::fmt(self, f)
+    }
+}
+
+impl Display for Error {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "xml error in type {}: {}", self.ty_name, self.kind)
+    }
+}
+
+impl std::error::Error for Error {}
 
 /// A list specifying kinds of error.
 ///
