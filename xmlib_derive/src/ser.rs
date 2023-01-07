@@ -146,7 +146,7 @@ fn expand_named_struct(s: NamedStruct, ident: &Ident) -> (TokenStream2, TokenStr
         })
         .collect();
 
-    let inner_ser_code = if ty_value.is_empty() {
+    let inner_ser_code = if ty_value.is_empty() && ty_value_buf.is_none() {
         quote! {
             writer__.write_all(b"/>")?;
         }

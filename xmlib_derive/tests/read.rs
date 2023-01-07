@@ -197,6 +197,41 @@ fn different_values() {
 }
 
 #[test]
+fn value_buf() {
+    #[derive(Debug, Deserialize, PartialEq)]
+    struct Struct {
+        #[xmlib(default = 0)]
+        a: u8,
+        #[xmlib(value)]
+        i: InnerStruct,
+        #[xmlib(value_buf)]
+        b: u32,
+    }
+
+    #[derive(Debug, Deserialize, PartialEq)]
+    struct InnerStruct {
+        a: u8,
+        #[xmlib(value_buf)]
+        b: String,
+    }
+
+    let input: Vec<u8> =
+        br#"<struct a="1">12<innerStruct a="2">Hey!</innerStruct></struct>"#.to_vec();
+    let s = read_struct(&input);
+    assert_eq!(
+        s,
+        Some(Struct {
+            a: 1,
+            i: InnerStruct {
+                a: 2,
+                b: String::from("Hey!")
+            },
+            b: 12,
+        })
+    );
+}
+
+#[test]
 fn namespaces() {
     #[derive(Debug, Deserialize, PartialEq)]
     struct Struct {

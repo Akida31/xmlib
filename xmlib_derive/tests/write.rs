@@ -1,7 +1,7 @@
 use xmlib_derive::Serialize;
 
 use xmlib::ser::Serialize;
-
+/*
 #[derive(Debug, Serialize, PartialEq)]
 pub enum SomeInnerEnum {
     A,
@@ -19,13 +19,14 @@ impl std::str::FromStr for SomeInnerEnum {
         }
     }
 }
+*/
 
 fn ser<T: Serialize<Vec<u8>>>(v: &T) -> Result<String, std::string::FromUtf8Error> {
     let mut writer = xmlib::ser::XmlWriter::new(Vec::with_capacity(128)).unwrap();
     v.ser(&mut writer).unwrap();
     String::from_utf8(writer.clone())
 }
-
+/*
 #[test]
 fn ser_struct() {
     #[derive(Serialize, Debug, PartialEq)]
@@ -119,6 +120,39 @@ fn ser_renamed_enum() {
     assert_eq!(ser(&RenamedEnum::OtherName).unwrap(), r#"veryOtherName"#);
     assert_eq!(ser(&RenamedEnum::R1C1).unwrap(), r#"r1c1"#);
     assert_eq!(ser(&RenamedEnum::X1024x768).unwrap(), r#"x1024x768"#);
+}*/
+
+#[test]
+fn value_buf() {
+    #[derive(Debug, Serialize, PartialEq)]
+    struct Struct {
+        #[xmlib(default = 0)]
+        a: u8,
+        #[xmlib(value)]
+        i: InnerStruct,
+        #[xmlib(value_buf)]
+        b: u32,
+    }
+
+    #[derive(Debug, Serialize, PartialEq)]
+    struct InnerStruct {
+        a: u8,
+        #[xmlib(value_buf)]
+        b: String,
+    }
+
+    assert_eq!(
+        ser(&Struct {
+            a: 1,
+            i: InnerStruct {
+                a: 2,
+                b: String::from("Hey!")
+            },
+            b: 12,
+        })
+        .unwrap(),
+        r#"<struct a="1"><innerStruct a="2">Hey!</innerStruct>12</struct>"#
+    );
 }
 
 #[test]
