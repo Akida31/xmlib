@@ -248,6 +248,7 @@ fn expand_named_struct(s: NamedStruct, struct_ident: Ident) -> TokenStream {
                 #ident.push((name.to_owned(), attr.value.into_owned()));
             }
         });
+        finish_code.push(quote! {#ident, });
     }
 
     let raw_ser_name = proc_macro2::Literal::byte_string(raw_ser_name.as_bytes());

@@ -1,6 +1,6 @@
 use xmlib_derive::Deserialize;
 
-use xmlib::de::{DeserializeBuf, DeserializeElement};
+use xmlib::de::{CollectNamespaces, DeserializeBuf, DeserializeElement};
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub enum SomeInnerEnum {
@@ -194,4 +194,31 @@ fn different_values() {
             j: InnerStruct2 { a: 5 }
         })
     );
+}
+
+#[test]
+fn namespaces() {
+    #[derive(Debug, Deserialize, PartialEq)]
+    struct Struct {
+        #[xmlib(default = 0)]
+        a: u8,
+        #[xmlib(value)]
+        i: InnerStruct,
+        #[xmlib(collect_namespaces)]
+        namespaces: CollectNamespaces,
+    }
+
+    #[derive(Debug, Deserialize, PartialEq)]
+    struct InnerStruct {
+        b: u8,
+        #[xmlib(collect_namespaces)]
+        namespaces: CollectNamespaces,
+    }
+
+    let input: Vec<u8> =
+        br#"<struct xmlns:r="hi" xmlns="hey" a="1"><innerStruct xmlns:r="hi" b="42"/></struct>"#
+            .to_vec();
+    let s: Struct = read_struct(&input).unwrap();
+    assert_eq!(s.a, 1);
+    assert_eq!(s.i.b, 42);
 }
